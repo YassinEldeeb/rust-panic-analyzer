@@ -1,4 +1,4 @@
-# 🦀 Rust Panic Free Analyzer 🔎
+# 🦀 Rust Panic Analyzer 🔎
 
 ## Overview
 
