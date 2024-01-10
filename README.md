@@ -5,6 +5,7 @@
 Rust Panic Free Analyzer is an audit tool designed to scan your Rust crate or workspace. Its primary function is to identify potential panic points in your codebase, leading you in developing binaries and libraries that are as close to "Panic Free" as possible.
 
 > ℹ️ As of now, it only currently searches the crates that you develop, and not the dependencies of your crates.
+> ⚠️ For simplicity, the analsis is done using regex rather than an AST for simplicity, so you may encounter unidentified potential panic points if the lines were wrapped in certain ways that the regex patterns can't catch.
 
 ## How does it work?
 
@@ -29,10 +30,15 @@ cargo install panic-free-analyzer
 ```
 
 
-## Usage:
+## Usage Locally:
 
 After installation, you can run the analyzer on your crate or entire workspace. Use the following command:
 
+```sh
+cargo panic-analyzer > audit.md
+```
+
+Logging audit result to the terminal
 ```sh
 cargo panic-analyzer
 ```
@@ -40,8 +46,61 @@ cargo panic-analyzer
 If you wish to exclude specific crates from your workspace during the analysis, set the `IGNORED_CRATES`` environment variable. Pass the names of the crates you want to exclude, separated by commas:
 
 ```sh
-IGNORED_CRATES=tests,benches cargo panic-analyzer
+IGNORED_CRATES=tests,benches cargo panic-analyzer > audit.md
 ```
+
+A potential panic is not necessarily bad, sometimes errors are unrecoverable, and we have to panic.
+If your panic is intentional, you can add a comment before the line that has the potential panicing code like this:
+
+```rs
+pub fn shutdown_server() {
+  // @expected: we need this
+  panic!("Exited process!")
+}
+```
+
+The syntax is as the following: `// @expected: description/reason`.
+
+This won't be counted as a potential panic point, but rather an expected panic in a section at the end.
+
+
+## Pull Requests Audit results via GitHub Actions
+
+You can also hook it up with your CI to post the results on your PRs as a comment which can be very helpful!
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  panic-free-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - name: install panic free analyzer
+        run: |
+            cargo install panic-free-analyzer
+
+      - name: run panic free analyzer
+        run: |
+            cargo panic-analyzer > ./audit.md
+        env:
+          IGNORED_CRATES: e2e_tests,benches
+
+      - name: comment on pull request
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          filePath: ./audit.md
+          comment_tag: rust-code-audit
+
+```
+
 
 # Audit Results Example 👇
 
