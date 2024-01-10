@@ -2,7 +2,7 @@
 
 ## Overview
 
-Rust Panic Free Analyzer is an audit tool designed to scan your Rust crate or workspace. Its primary function is to identify potential panic points in your codebase, leading you in developing binaries and libraries that are as close to "Panic Free" as possible.
+Rust Panic Analyzer is an audit tool designed to scan your Rust crate or workspace. Its primary function is to identify potential panic points in your codebase, leading you in developing binaries and libraries that are as close to "Panic Free" as possible.
 
 > ℹ️ As of now, it only currently searches the crates that you develop, and not the dependencies of your crates.
 >
