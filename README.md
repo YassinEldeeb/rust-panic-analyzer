@@ -5,6 +5,7 @@
 Rust Panic Free Analyzer is an audit tool designed to scan your Rust crate or workspace. Its primary function is to identify potential panic points in your codebase, leading you in developing binaries and libraries that are as close to "Panic Free" as possible.
 
 > ℹ️ As of now, it only currently searches the crates that you develop, and not the dependencies of your crates.
+>
 > ⚠️ For simplicity, the analsis is done using regex rather than an AST for simplicity, so you may encounter unidentified potential panic points if the lines were wrapped in certain ways that the regex patterns can't catch.
 
 ## How does it work?
