@@ -46,6 +46,12 @@ If you wish to exclude specific crates from your workspace during the analysis, 
 IGNORED_CRATES=tests,benches cargo panic-analyzer > audit.md
 ```
 
+You can also do the same with files as the following:
+
+```sh
+IGNORED_FILES=./src/tests/something.rs,./src/tests/else.rs cargo panic-analyzer > audit.md
+```
+
 A potential panic is not necessarily bad, sometimes errors are unrecoverable, and we have to panic.
 If your panic is intentional, you can add a comment before the line that has the potential panicing code like this:
 
