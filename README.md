@@ -23,7 +23,7 @@ The tool searches for usage of several key patterns in Rust code that are often 
 To start using it, you need to install it first.
 
 ```sh
-cargo install panic-free-analyzer
+cargo install panic-analyzer
 ```
 
 
@@ -88,7 +88,7 @@ jobs:
 
       - name: install panic free analyzer
         run: |
-            cargo install panic-free-analyzer
+            cargo install panic-analyzer
 
       - name: run panic free analyzer
         run: |
