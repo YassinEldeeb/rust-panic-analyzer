@@ -56,6 +56,8 @@ fn main() -> io::Result<()> {
 
     if is_crate_directory(crate_path) {
       let crate_name = crate_path
+        .canonicalize()
+        .unwrap_or_default()
         .file_name()
         .and_then(|name| name.to_str())
         .unwrap_or_default()
