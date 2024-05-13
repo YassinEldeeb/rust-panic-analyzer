@@ -43,6 +43,8 @@ fn main() -> io::Result<()> {
     .map(|s| s.to_string())
     .collect::<HashSet<String>>();
 
+  let ignore_array_index_only_crates = std::env::var("IGNORE_ARRAY_INDEX_ONLY_CRATES").is_ok();
+
   let mut crate_counts: HashMap<String, HashMap<&str, (usize, String)>> = HashMap::new();
   let mut expected_annotations: HashMap<String, Vec<(String, String, String)>> = HashMap::new();
 
@@ -143,16 +145,18 @@ fn main() -> io::Result<()> {
     }
   }
 
-  // adjust counts for crates with only 'array_index' errors
-  for pattern_counts in crate_counts.values_mut() {
-    let only_array_index_errors = pattern_counts
-      .iter()
-      .all(|(pattern, &(count, _))| *pattern == "array_index" || count == 0);
+  if ignore_array_index_only_crates {
+    // adjust counts for crates with only 'array_index' errors
+    for pattern_counts in crate_counts.values_mut() {
+      let only_array_index_errors = pattern_counts
+        .iter()
+        .all(|(pattern, &(count, _))| *pattern == "array_index" || count == 0);
 
-    if only_array_index_errors {
-      if let Some((count, _)) = pattern_counts.get_mut("array_index") {
-        total_actual_audits = total_actual_audits - *count;
-        *count = 0;
+      if only_array_index_errors {
+        if let Some((count, _)) = pattern_counts.get_mut("array_index") {
+          total_actual_audits = total_actual_audits - *count;
+          *count = 0;
+        }
       }
     }
   }
