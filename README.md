@@ -52,6 +52,12 @@ You can also do the same with files as the following:
 IGNORED_FILES=./src/tests/something.rs,./src/tests/else.rs cargo panic-analyzer > audit.md
 ```
 
+For ignoring crates that only use array indexing without triggering other audits define the `IGNORE_ARRAY_INDEX_ONLY_CRATES`` environment variable.
+
+```sh
+IGNORE_ARRAY_INDEX_ONLY_CRATES=1 cargo panic-analyzer > audit.md
+```
+
 A potential panic is not necessarily bad, sometimes errors are unrecoverable, and we have to panic.
 If your panic is intentional, you can add a comment before the line that has the potential panicing code like this:
 
