@@ -1,12 +1,17 @@
 use regex::Regex;
 use std::collections::{HashMap, HashSet};
-use std::fs::File;
+use std::fs::{read_to_string, File};
 use std::io::{self, BufRead};
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use toml::Table;
 use walkdir::WalkDir;
 
 fn is_crate_directory(crate_dir: &Path) -> bool {
   crate_dir.join("Cargo.toml").exists()
+}
+
+fn get_toml_path(crate_dir: &Path) -> PathBuf {
+  crate_dir.join("Cargo.toml")
 }
 
 fn main() -> io::Result<()> {
@@ -55,17 +60,14 @@ fn main() -> io::Result<()> {
     let crate_path = entry.path();
 
     if is_crate_directory(crate_path) {
-      let crate_name = crate_path
-        .canonicalize()
-        .unwrap_or_default()
-        .file_name()
-        .and_then(|name| name.to_str())
-        .unwrap_or_default()
-        .to_string();
+      let toml_path = get_toml_path(crate_path);
+      let toml_content = read_to_string(toml_path).unwrap_or_default();
+      let toml_parsed = toml_content.parse::<Table>().unwrap_or_default();
+      let crate_name = toml_parsed["package"]["name"].as_str().unwrap_or_default();
 
       if crate_name.is_empty()
         || crate_name == exclude_crate_name
-        || ignored_crates.contains(&crate_name.as_str())
+        || ignored_crates.contains(&crate_name)
       {
         continue;
       }
