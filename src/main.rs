@@ -63,22 +63,16 @@ fn main() -> io::Result<()> {
       let toml_path = get_toml_path(crate_path);
       let toml_content = read_to_string(toml_path).unwrap_or_default();
       let toml_parsed = toml_content.parse::<Table>().unwrap_or_default();
-      let crate_name = toml_parsed["package"]["name"].as_str().unwrap_or_default();
+      let crate_name = toml_parsed["package"]["name"].as_str().unwrap_or_default().to_string();
 
       if crate_name.is_empty()
         || crate_name == exclude_crate_name
-        || ignored_crates.contains(&crate_name)
+        || ignored_crates.contains(&crate_name.as_str())
       {
         continue;
       }
 
       let mut pattern_counts: HashMap<&str, (usize, String)> = HashMap::new();
-
-      let crate_name = crate_path
-        .file_name()
-        .and_then(|name| name.to_str())
-        .unwrap_or_default()
-        .to_string();
 
       for entry in WalkDir::new(crate_path).into_iter().filter_map(|e| e.ok()) {
         if entry.file_type().is_file() && entry.path().extension().map_or(false, |ext| ext == "rs")
