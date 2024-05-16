@@ -63,6 +63,18 @@ fn main() -> io::Result<()> {
       let toml_path = get_toml_path(crate_path);
       let toml_content = read_to_string(toml_path).unwrap_or_default();
       let toml_parsed = toml_content.parse::<Table>().unwrap_or_default();
+
+      // check if relevant toml keys exist. panics if keys do not exist and access is attempted
+      if !toml_parsed.contains_key("package") {
+        continue;
+      }
+      if !match toml_parsed["package"].as_table() {
+        Some(x) => x.contains_key("name"),
+        None => continue
+      } {
+        continue;
+      }
+
       let crate_name = toml_parsed["package"]["name"].as_str().unwrap_or_default().to_string();
 
       if crate_name.is_empty()
